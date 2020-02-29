@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/aop
+        http://www.springframework.org/schema/aop/spring-aop.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd">
+	<!-- 将指定类TestDaoImpl配置给Spring，让Spring创建其实例 
+	<bean id="myTestDIDao" class="dao.TestDIDaoImpl" />
+	<bean id="testDIService" class="service.TestDIServiceImpl">
+		<constructor-arg index="0" ref="myTestDIDao" />
+	</bean>
+	<bean id="testDIService_Constructor" class="service.TestDIServiceImpl">
+		<constructor-arg name="s" value="这里代表String类型的构造参数" />
+	</bean>-->
+	    <context:component-scan base-package="dao"/>
+	    <context:component-scan base-package="controller"/>
+	    <context:component-scan base-package="service"/>
+	  	<aop:aspectj-autoproxy/>
+	  	
+	  	 <!-- 配置数据源 -->
+  <bean id="dataSource" class="org.apache.commons.dbcp2.BasicDataSource">
+   		<!-- MySQL数据库驱动  <property name="driverClassName" value="com.mysql.jdbc.Driver"/>-->
+   		<property name="driverClassName" value="com.mysql.cj.jdbc.Driver" />
+   		<!-- 连接数据库的URL -->
+   		<property name="url" value="jdbc:mysql://localhost:3306/ireader_admin?serverTimezone=GMT" />
+   		<!-- 连接数据库的用户名 -->
+   		<property name="username" value="root"/>
+   		<!-- 连接数据库的密码 -->
+   		<property name="password" value="123456"/>
+   		<!-- 最大连接数 -->
+			<property name="maxTotal" value="30"/>
+			<!-- 最大空闲连接数 -->
+			<property name="maxIdle" value="10"/>
+			<!-- 初始化连接数 -->
+			<property name="initialSize" value="5"/>
+   </bean>
+   <!-- 配置JDBC模板 -->
+   <bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+   		<property name="dataSource" ref="dataSource"/>
+   </bean>
+   <!-- 配置MyBatis工厂，同时指定数据源，并与MyBatis完美整合 -->  
+ 	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">  
+        <property name="dataSource" ref="dataSource" />  
+        <!-- configLocation的属性值为MyBatis的核心配置文件 -->
+        <property name="configLocation" value="classpath:mybatis-config.xml"/>
+    </bean>
+   	<!--Mapper代理开发，使用Spring自动扫描MyBatis的接口并装配
+ 	（Spring将指定包中所有被@Mapper注解标注的接口自动装配为MyBatis的映射接口）  --> 
+     <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+     	<!-- mybatis-spring组件的扫描器 -->
+     	<property name="basePackage" value="dao"/>
+     	<property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/>
+     </bean>
+</beans>

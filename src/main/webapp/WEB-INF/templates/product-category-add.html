@@ -1,0 +1,104 @@
+<!DOCTYPE HTML>
+<html lang="cn" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="utf-8">
+<meta name="renderer" content="webkit|ie-comp|ie-stand">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport"
+	content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<!--[if lt IE 9]>
+<script type="text/javascript" src="lib/html5shiv.js"></script>
+<script type="text/javascript" src="lib/respond.min.js"></script>
+
+<![endif]-->
+<link rel="stylesheet" type="text/css"
+	href="static/h-ui/css/H-ui.min.css" />
+<link rel="stylesheet" type="text/css"
+	href="static/h-ui.admin/css/H-ui.admin.css" />
+<link rel="stylesheet" type="text/css"
+	href="lib/Hui-iconfont/1.0.8/iconfont.css" />
+<link rel="stylesheet" type="text/css"
+	href="static/h-ui.admin/css/style.css" />
+<!--[if IE 6]>
+<script type="text/javascript" src="lib/DD_belatedPNG_0.0.8a-min.js" ></script>
+<script>DD_belatedPNG.fix('*');</script>
+<![endif]-->
+<title>添加产品分类</title>
+</head>
+<body>
+	<div class="page-container">
+		<form action="" method="post" id="newNode" class="form form-horizontal">
+			<div class="row cl">
+				<label class="form-label col-xs-4 col-sm-2">
+				 <!-- 选中节点id和其子节点id -->
+				 <input style="display: none" readonly value="" id="showNodeId" name="nodeId">
+					已选中节点名称：
+				</label>
+				<div class="formControls col-xs-7 col-sm-7">
+					<span id="showNodeName" ></span>
+				</div> 
+			</div>
+			<div class="row cl">
+				<label class="form-label col-xs-4 col-sm-2"> <span
+					class="c-red">*</span> 添加子节点分类名称：
+				</label>
+				<div class="formControls col-xs-6 col-sm-6">
+					<input type="text" class="input-text" value="" placeholder=""
+						id="user-name" name="nodeName">
+				</div>
+			</div>
+			<div class="row cl">
+				<label class="form-label col-xs-4 col-sm-2">备注：</label>
+				<div class="formControls col-xs-6 col-sm-6">
+					<textarea name="nodeDescription" cols="" rows="" class="textarea"
+						placeholder="说点什么...最少输入10个字符"
+						onKeyUp="$.Huitextarealength(this,100)"></textarea>
+					<p class="textarea-numberbar">
+						<em class="textarea-length">0</em>/100
+					</p>
+				</div>
+			</div>
+			<div class="row cl">
+				<div class="col-9 col-offset-2">
+					<input  onclick="add()" class="btn btn-primary radius" type="button"
+						value="&nbsp;&nbsp;提交&nbsp;&nbsp;">
+				</div>
+			</div>
+		</form>
+	</div>
+	<!--_footer 作为公共模版分离出去-->
+	<script type="text/javascript" src="lib/jquery/1.9.1/jquery.min.js"></script>
+	<script type="text/javascript" src="lib/layer/2.4/layer.js"></script>
+	<script type="text/javascript" src="static/h-ui/js/H-ui.min.js"></script>
+	<script type="text/javascript" src="static/h-ui.admin/js/H-ui.admin.js"></script>
+	<!--/_footer 作为公共模版分离出去-->
+
+	<!--请在下方写此页面业务相关的脚本-->
+	<script type="text/javascript"
+		src="lib/jquery.validation/1.14.0/jquery.validate.js"></script>
+	<script type="text/javascript"
+		src="lib/jquery.validation/1.14.0/validate-methods.js"></script>
+	<script type="text/javascript"
+		src="lib/jquery.validation/1.14.0/messages_zh.js"></script>
+	<!-- lxg -->
+	<script type="text/javascript">
+	function add(){
+		 $.ajax({
+		        url:'toAddNode',
+		        data:$('#newNode').serialize(),                 //将表单数据序列化，格式为name=value
+		        type:'POST',
+		        dataType:'json',
+		        async: false,                              //加上之后不在跳转进error
+		        success:function(data){
+		        	layer.msg('添加分类成功',{icon: 1,time:1000});
+		        },
+		        error:function(){
+		        	layer.msg('添加分类失败',{icon: 5,time:1000});
+		        },
+		        
+		    });	
+	}	
+	</script>
+</body>
+</html>

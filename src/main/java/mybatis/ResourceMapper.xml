@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="dao.ResourceDao">
+	<!-- 查询所有分类信息 -->
+	<select id="getAllCategory" resultType="po.ResourceCategory">
+		select * from category
+	</select>
+	
+	<!-- 添加新类别 -->
+	<insert id="addNode" parameterType="po.ResourceCategory" >
+		insert into category (nodePid,nodeName) values(#{nodeId},#{nodeName})
+	</insert>
+	
+	<!-- 修改类别 -->
+	<update id="editNode" parameterType="po.ResourceCategory">
+		update category set nodeName=#{nodeName} where nodeId=#{nodeId} 
+	</update>
+	
+	<!-- 删除类别 -->
+	<delete id="deleteNode" parameterType="int">
+		delete from category where nodeId=#{nodeId}
+	</delete>
+	
+	
+	<!-- 资源信息部分 -->
+	<!-- 查询所有资源信息 -->
+	<select id="getAllResource" resultType="po.Resource_Info">
+		select * from resource_info
+	</select>
+	
+	<!-- 添加新资源 -->
+	<insert id="addResource" parameterType="po.Resource_Info" >
+		insert into resource_info (re_name,re_src,re_img_path , re_category_id,re_type , uper_account,uper_name ,re_description ,re_value) values(#{re_name},#{re_src},
+		#{re_img_path},#{re_category_id},#{re_type},#{uper_account},#{uper_name},#{re_description},#{re_value})
+	</insert>
+	
+	<!-- 修改资源 -->
+	<update id="editResource" parameterType="po.Resource_Info">
+		update resource_info set re_name=#{re_name}, re_src= #{re_src}, re_img_path= #{re_img_path}, re_category_id= #{re_category_id}, re_type= #{re_type}, 
+		uper_account= #{uper_account}, uper_name= #{uper_name}, re_description= #{re_description}, re_value= #{re_value} 
+		 where re_id=#{re_id} 
+	</update>
+	
+	<!-- 删除资源 -->
+	<delete id="deleteResource" parameterType="int">
+		delete from resource_info where re_id=#{re_id}
+	</delete>
+	
+	<!-- 通过类别id返回资源 -->
+	<select id="getResourceByCategoryId" resultType="po.Resource_Info">
+		select * from resource_info where re_category_id = #{categoryId}
+	</select>
+	
+	
+	
+	
+	
+	
+	
+	<!-- 资讯 -->
+	<!-- 查找所有资讯 -->
+	<select id="getAllInfomation" resultType="po.Information_toUser">
+		select * from broadcast_user
+	</select>
+	
+	<!-- 查找所有资源分类信息 -->
+	<select id="getAllInformationCategory" resultType="po.InformationCategory">
+		select * from broadcast_category
+	</select>
+	
+	<!-- 通过类别category_id返回资源分类信息 -->
+	<select id="getInformationCategoryByCategoryId" resultType="String">
+		select cname from broadcast_category where cid = #{cid}
+	</select>
+	
+	<!-- 通过bu_id返回资讯 -->
+	<select id="getInformationById" resultType="po.Information_toUser">
+		select * from broadcast_user where bu_id = #{bu_id}
+	</select>
+	
+	<!-- 通过bu_id删除资讯 -->
+	<delete id="deleteInformation" parameterType="int">
+		delete from broadcast_user where bu_id = #{bu_id}
+	</delete>
+	
+		<!-- 改变资讯发布状态 -->
+	<update id="changeInfomationState" parameterType="po.Information_toUser">
+		update broadcast_user set
+		<choose>
+			<when test="bu_state == '已发布'">
+				bu_state='已下架'
+			</when>
+			<when test="bu_state == '已下架'">
+				bu_state='已发布'
+			</when>
+		</choose>
+		 where bu_id=#{bu_id} 
+	</update>
+	
+	
+	<!-- 添加新资讯 -->
+	<insert id="addInformation" parameterType="po.Information_toUser" >
+		insert into broadcast_user (bu_title,bu_content,bu_category_id, creater_id) values(#{bu_title},#{bu_content},#{bu_category_id},#{creater_id})
+	</insert>
+	
+	<!-- 修改资讯 -->
+	<update id="editInformation" parameterType="po.Information_toUser">
+		update broadcast_user set bu_title=#{bu_title} ,bu_content=#{bu_content},creater_id=#{creater_id},bu_category_id=#{bu_category_id} where bu_id=#{bu_id} 
+	</update>
+	
+	<!-- 返回管理员未阅读资讯 -->
+	<select id="getAdminUnreadInformation" parameterType="int" resultType="po.Information_toUser">
+		select * from broadcast_belong_to_admin left join broadcast_user on broadcast_user.bu_id = broadcast_belong_to_admin.bu_id where broadcast_belong_to_admin.admin_id = #{admin_id} and broadcast_belong_to_admin.is_read = 0;
+	</select>
+	
+	<!-- 已阅资讯 -->
+	<update id="setReaded" parameterType="int">
+		update broadcast_belong_to_admin set is_read = 1 where admin_id = #{admin_id} and bu_id=#{bu_id}
+	</update>
+	
+</mapper>

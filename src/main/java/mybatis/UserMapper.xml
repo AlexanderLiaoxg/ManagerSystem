@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="dao.UserDao">
+	<!-- 查询所有用户信息 -->
+	<select id="getAllUser" resultType="po.User_Info">
+		select * from user_info
+	</select>
+	
+	<!-- 添加新用户 -->
+	<insert id="addUser" parameterType="po.User_Info" >
+		insert into user_info (usex,uname,uphone,uaddress,uemail) values(#{usex},#{uname},#{uphone},#{uaddress},#{uemail})
+	</insert>
+	
+	<!-- 修改新用户 -->
+	<update id="editUser" parameterType="po.User_Info">
+		update user_info set uname=#{uname} , uphone=#{uphone} , uaddress=#{uaddress} , uemail=#{uemail} , usex=#{usex} where uid=#{uid} 
+	</update>
+	
+	<!-- 删除用户 -->
+	<delete id="deleteUser" parameterType="int">
+		delete from user_info where uid=#{uid}
+	</delete>
+	
+	
+	<!-- 更新状态 -->
+	<select id="changeUserState" parameterType="po.User_Info">
+		update user_info set
+		<choose>
+			<when test="ustate == '已启用'">
+				ustate='已停用'
+			</when>
+			<when test="ustate == '已停用'">
+				ustate='已启用'
+			</when>
+		</choose>
+		where uid = #{uid}
+	</select>
+	
+	<!-- 通过id查询用户信息 -->
+	<select id="gettUserById" resultType="po.User_Info">
+		select * from user_info where uid = #{uname}
+	</select>
+</mapper>

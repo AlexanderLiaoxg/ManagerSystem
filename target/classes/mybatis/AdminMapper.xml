@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="dao.AdminDao">
+	<!-- 查询所有用户信息 -->
+	<select id="getAllAdmin" resultType="po.Admin_User">
+		select * from admin_info
+	</select>
+	<!-- 根据admin_id查询一个用户信息 -->
+	<select id="getAdminById" parameterType="int" 
+		resultType="po.Admin_User">
+		select * from admin_login where admin_id = #{admin_id}
+	</select>
+	
+	<!-- 获取角色 -->
+	<select id="getRoleById" parameterType="int" resultType ="String">
+		select admin_role.rname from admin_info left join admin_role on admin_info.admin_role_id = admin_role.rid where admin_info.admin_id = #{admin_id};
+	</select>
+	
+	<!-- 添加新用户 -->
+	<insert id="addAdmin" parameterType="po.Admin_User" >
+		insert into admin_info (admin_id,admin_name,admin_password,admin_phone,admin_role_id,admin_email) values(#{admin_id},#{admin_name},#{admin_password},#{admin_phone},#{admin_role_id},#{admin_email})
+	</insert>
+	
+	<!-- 修改新用户 -->
+	<update id="editAdmin" parameterType="po.Admin_User">
+		update admin_info set  admin_name=#{admin_name} , admin_password=#{admin_password} , admin_phone=#{admin_phone} , admin_role_id=#{admin_role_id},admin_email=#{admin_email} where admin_id=#{admin_id} 
+	</update>
+	
+	<!-- 删除用户 -->
+	<delete id="deleteAdmin" parameterType="int">
+		delete from admin_info where admin_id=#{admin_id}
+	</delete>
+	
+	
+	<!-- 更新状态 -->
+	<select id="changeAdminState" parameterType="po.Admin_User">
+		update admin_info set
+		<choose>
+			<when test="admin_state == '已启用'">
+				admin_state='已停用'
+			</when>
+			<when test="admin_state == '已停用'">
+				admin_state='已启用'
+			</when>
+		</choose>
+		where admin_id = #{admin_id}
+	</select>
+	
+	
+	<!-- 获取用户未读的资讯数量 -->
+	<select id="getAdminUnReadInformation" parameterType="int" resultType="int">
+		select count(*) from broadcast_belong_to_admin where admin_id = #{admin_id}
+	</select>
+</mapper>
