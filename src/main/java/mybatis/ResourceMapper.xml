@@ -52,7 +52,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	<select id="getResourceByCategoryId" resultType="po.Resource_Info">
 		select * from resource_info where re_category_id = #{categoryId}
 	</select>
-	
+	<!-- 根据时间段来返回资源 -->
+	<select id="getDateFindResources" parameterType="String" resultType="po.Resource_Info">
+		select * from resource_info where up_time between #{logMin} and #{logMax}
+	</select>
 	
 	
 	
@@ -119,5 +122,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	<update id="setReaded" parameterType="int">
 		update broadcast_belong_to_admin set is_read = 1 where admin_id = #{admin_id} and bu_id=#{bu_id}
 	</update>
+	
+	<!-- 根据时间段来查询资讯 -->
+	<select id="getDateFindInformation" parameterType="String" resultType="po.Information_toUser">
+		select * from broadcast_user where bu_create_time between #{logMin} and #{logMax}
+	</select>
 	
 </mapper>

@@ -1,7 +1,9 @@
 package controller;
 
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -20,6 +22,7 @@ import po.Admin_User;
 import po.InformationCategory;
 import po.Information_toUser;
 import service.AdminService;
+import util.KMP;
 
 @Controller
 public class InfomationController {
@@ -185,6 +188,37 @@ public class InfomationController {
 		JSONObject result = new JSONObject();  
         result.put("success", true);  
 		return result;
+	}
+	
+	@RequestMapping("/toGetDateFindInformation")
+	public String toGetDateFindInformation(Model model,String logMin,String logMax,String title) {
+		/*取出所有数据,用sql语句直接比较datetime数据，比如bu_create_time>'2020-03-03'*/
+		List<Information_toUser> infos = resourceDao.getDateFindInformation(logMax, logMin);
+		/*截取id和title组成新的MAP信息*/
+		Map<Integer,String>datas = new HashMap<Integer, String>();
+		Iterator<Information_toUser> iterator = infos.iterator();
+		 while (iterator.hasNext())
+		 {
+			 	Information_toUser info = iterator.next();
+			 	datas.put(info.getBu_id(), info.getBu_title());
+		 }
+		KMP kmp = new KMP(title, datas);
+		System.out.println("datas: " + datas.toString());
+		List<Integer> bu_ids = kmp.Judgement();
+		System.out.println("bu_ids: " + bu_ids.toString());
+		
+		/**根据bu_id返回筛选的结果集**/
+		iterator = infos.iterator();
+		while (iterator.hasNext())
+		 {
+			 	Information_toUser info = iterator.next();
+			 	if(!bu_ids.contains(info.getBu_id())) {
+			 		iterator.remove();
+			 		System.out.print("移除了：" + info.getBu_title());
+			 	}
+		 }
+		model.addAttribute("infos", infos);
+		return "article-list";
 	}
 	
 }

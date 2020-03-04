@@ -1,5 +1,6 @@
 package po;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class User_Info {
@@ -11,6 +12,7 @@ public class User_Info {
 	private String uaddress;
 	private Date ucreate_time;
 	private String ustate;
+	SimpleDateFormat format  = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	public int getUid() {
 		return uid;
 	}
@@ -47,8 +49,8 @@ public class User_Info {
 	public void setUaddress(String uaddress) {
 		this.uaddress = uaddress;
 	}
-	public Date getUcreate_time() {
-		return ucreate_time;
+	public String getUcreate_time() {
+		return format.format(ucreate_time);
 	}
 	public void setUcreate_time(Date ucreat_time) {
 		this.ucreate_time = ucreat_time;

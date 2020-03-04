@@ -1,8 +1,10 @@
 package po;
 
 import java.util.Date;
+import java.text.SimpleDateFormat;
 
 public class Information_toUser {
+   
 	private int bu_id;
 	private int creater_id;
 	private String creater_name;
@@ -13,6 +15,9 @@ public class Information_toUser {
 	private Date bu_create_time;
 	private int bu_read_times;
 	private String bu_state;
+	/**格式化时间**/
+	SimpleDateFormat format  = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	
 	public int getBu_id() {
 		return bu_id;
 	}
@@ -55,8 +60,8 @@ public class Information_toUser {
 	public void setBu_title(String bu_title) {
 		this.bu_title = bu_title;
 	}
-	public Date getBu_create_time() {
-		return bu_create_time;
+	public String getBu_create_time() {
+		return format.format(bu_create_time);
 	}
 	public void setBu_create_time(Date bu_create_time) {
 		this.bu_create_time = bu_create_time;

@@ -1,6 +1,10 @@
 package controller;
 
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -16,13 +20,16 @@ import org.springframework.http.HttpRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import dao.UserDao;
 import net.sf.json.JSONObject;
 import po.User_Info;
 import service.UserService;
+import util.KMP;
 import po.Admin_User;
+import po.Information_toUser;
 
 @Controller
 public class UserController {
@@ -86,6 +93,68 @@ public class UserController {
 		JSONObject result = new JSONObject();  
         result.put("success", true);  
 		return result;
+	}
+	
+	@ResponseBody
+	@RequestMapping("/toDeleteMembers")
+	public JSONObject toDeleteMembers(@RequestParam(value="checked_ids") int[] checked_ids)
+	{
+		
+		for(int i=0 ; i<checked_ids.length; i++)
+		{
+			userDao.deleteUser(checked_ids[i]);
+		}
+		JSONObject result = new JSONObject();  
+        result.put("success", true);  
+		return result;
+	}
+	
+	@RequestMapping("/toGetDateFindMember")
+	public String toGetDateFindMember(Model model,String logMin,String logMax,String name_phone_email) {
+		
+		List<User_Info> users = userDao.getDateFindUser(logMax, logMin);
+		/*截取id和title组成新的MAP信息*/
+		Map<Integer,String>names = new HashMap<Integer, String>();
+		Map<Integer,String>phones = new HashMap<Integer, String>();
+		Map<Integer,String>emails = new HashMap<Integer, String>();
+		Iterator<User_Info> iterator = users.iterator();
+		 while (iterator.hasNext())
+		 {
+			 	User_Info user = iterator.next();
+			 	names.put(user.getUid(),user.getUname());
+			 	phones.put(user.getUid(),user.getUphone());
+			 	emails.put(user.getUid(),user.getUemail());
+		 }
+		 
+		KMP kmp_names = new KMP(name_phone_email, names);
+		KMP kmp_phones = new KMP(name_phone_email, phones);
+		KMP kmp_emails = new KMP(name_phone_email, emails);
+		
+		List<Integer> admin_ids = kmp_names.Judgement();
+		List<Integer> admin_ids_2 = kmp_phones.Judgement();
+		List<Integer> admin_ids_3 = kmp_emails.Judgement();
+		
+		/*利用List和HashSet的特性来去重*/
+		admin_ids.addAll(admin_ids_2);
+		admin_ids.addAll(admin_ids_3);
+		HashSet hash = new HashSet(admin_ids);
+		admin_ids.clear();
+		admin_ids.addAll(hash);
+		System.out.println(admin_ids.toString());
+		
+		/**根据id返回筛选的结果集**/
+		iterator = users.iterator();
+		while (iterator.hasNext())
+		 {
+				User_Info user = iterator.next();
+				System.out.print("iterator：" + user.getUname());
+			 	if(!admin_ids.contains(user.getUid())) {
+			 		iterator.remove();
+			 		System.out.print("移除了：" + user.getUname());
+			 	}
+		 }
+		model.addAttribute("users", users);
+		return "member-list";
 	}
 	
 }

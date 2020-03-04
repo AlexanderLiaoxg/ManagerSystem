@@ -27,20 +27,20 @@
 <nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span> 管理员管理 <span class="c-gray en">&gt;</span> 管理员列表 <a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新" ><i class="Hui-iconfont">&#xe68f;</i></a></nav>
 <div class="page-container">
 	<div class="text-c"> 日期范围：
-		<input type="text" onfocus="WdatePicker({ maxDate:'#F{$dp.$D(\'datemax\')||\'%y-%M-%d\'}' })" id="datemin" class="input-text Wdate" style="width:120px;">
+		<input type="text" autocomplete="off"  onfocus="WdatePicker({ maxDate:'#F{$dp.$D(\'logmax\')||\'%y-%M-%d\'}' })" id="logmin" class="input-text Wdate" style="width:120px;">
 		-
-		<input type="text" onfocus="WdatePicker({ minDate:'#F{$dp.$D(\'datemin\')}',maxDate:'%y-%M-%d' })" id="datemax" class="input-text Wdate" style="width:120px;">
-		<input type="text" class="input-text" style="width:250px" placeholder="输入管理员名称" id="" name="">
-		<button type="submit" class="btn btn-success" id="" name=""><i class="Hui-iconfont">&#xe665;</i> 搜用户</button>
+		<input type="text" autocomplete="off"  onfocus="WdatePicker({ minDate:'#F{$dp.$D(\'logmin\')}',maxDate:'%y-%M-%d' })" id="logmax" class="input-text Wdate" style="width:120px;">
+		<input type="text" class="input-text" style="width:250px" placeholder="输入管理员名称" id="" name="admin_name">
+		<button onclick="toGetDateFindAdmin(this)" type="button" class="btn btn-success" id="" name=""><i class="Hui-iconfont">&#xe665;</i> 搜管理员</button>
 	</div>
-	<div class="cl pd-5 bg-1 bk-gray mt-20"> <span class="l"><a href="javascript:;" onclick="datadel()" class="btn btn-danger radius"><i class="Hui-iconfont">&#xe6e2;</i> 批量删除</a> <a href="javascript:;" onclick="admin_add('添加管理员','admin-add','800','500')" class="btn btn-primary radius"><i class="Hui-iconfont">&#xe600;</i> 添加管理员</a></span> <span class="r">共有数据：<strong>54</strong> 条</span> </div>
+	<div class="cl pd-5 bg-1 bk-gray mt-20"> <span class="l"><a href="javascript:;" onclick="deletAdmins()" class="btn btn-danger radius"><i class="Hui-iconfont">&#xe6e2;</i> 批量删除</a> <a href="javascript:;" onclick="admin_add('添加管理员','admin-add','800','500')" class="btn btn-primary radius"><i class="Hui-iconfont">&#xe600;</i> 添加管理员</a></span> <span class="r">共有数据：<strong>54</strong> 条</span> </div>
 	<table class="table table-border table-bordered table-bg">
 		<thead>
 			<tr>
 				<th scope="col" colspan="9">员工列表</th>
 			</tr>
 			<tr class="text-c">
-				<th width="25"><input type="checkbox" name="" value=""></th>
+				<th width="25"><input type="checkbox" id="select_all"  name="" value=""></th>
 				<th width="40">ID</th>
 				<th width="150">登录名</th>
 				<th width="90">手机</th>
@@ -53,8 +53,8 @@
 		</thead>
 		<tbody>
 			<tr th:each="admin:${admins}" class="text-c">
-				<td><input type="checkbox" value="1" name=""></td>
-				<td  th:text="${admin.getAdmin_id()}">1</td>
+				<td><input type="checkbox" value="1" name="select_item"></td>
+				<td class="id" th:text="${admin.getAdmin_id()}">1</td>
 				<td  th:text="${admin.getAdmin_name()}">admin</td>
 				<td  th:text="${admin.getAdmin_phone()}">13000000000</td>
 				<td  th:text="${admin.getAdmin_email()}">admin@mail.com</td>
@@ -164,6 +164,78 @@ function admin_start(obj){
 			},
 		});	
 	});
+}
+
+
+/*By_lxg : 选中所有元素，当前页面*/
+var checkboxes = document.getElementsByName('select_item');
+              $("#select_all").click(function() {
+              	  var bu_ids = new Array(checkboxes.length);
+                  for (var i = 0; i < checkboxes.length; i++) {
+                      var checkbox = checkboxes[i];
+                      bu_ids[i]=$(checkbox).parents("tr").children(".id").text();
+                      //如果select_all没有选中，子都不选中，如果选中就都选中
+                      if (!$(this).get(0).checked) {
+                          checkbox.checked = false;
+                      } else {
+                          checkbox.checked = true;
+                      }
+                  }
+              });
+
+function deletAdmins(){
+	var checkboxes = document.getElementsByName('select_item');
+	var checkedLines = new Array();
+	var checked_ids = new Array();
+	var j=0;
+	for (var i = 0; i < checkboxes.length; i++) {
+		//如果被勾选了
+		if(checkboxes[i].checked)
+			{
+				checked_ids[j] = $(checkboxes[i]).parents("tr").children(".id").text()
+				checkedLines[j] = $(checkboxes[i]).parents("tr")
+				j=j+1
+			}
+	}
+	//提交勾选的数据
+	$.ajax({
+		type: 'POST',
+		url: 'toDeleteAdmins',
+		data:{
+		        "checked_ids":checked_ids
+		 },
+		dataType: 'json',
+		//传递数组时必须使用true，因为不使用则是lists[]=xx&lists[]=xx，使用则是element = xx& element=xx
+		traditional:true,
+	    cache:false,
+	    async:false,
+		success: function(data){
+			for (var i = 0; i < checkedLines.length; i++) {
+				checkedLines[i].remove();
+			}
+		layer.msg('已删除!',{icon: 6,time:1000});
+		//刷新一下，免得分页出现不一样
+		location.reload()
+		},
+		error:function(data) {
+			console.log(data.msg);
+		},
+	});	
+}
+
+function toGetDateFindAdmin(obj){
+	var logMin = $(obj).parent().children("#logmin").val()
+	var logMax = $(obj).parent().children("#logmax").val()
+	var admin_name = document.getElementsByName("admin_name")[0].value;
+	var url = "toGetDateFindAdmin?logMin=" + logMin  +"&logMax=" + logMax + "&admin_name=" + admin_name;
+	if(logMin==""||logMax==""){
+		layer.msg('时间不能为空!',{icon: 5,time:1000});	
+	}
+	else if(admin_name==""){
+		layer.msg('管理员名称不能为空!',{icon: 5,time:1000});
+	}else{
+		window.location.href=url;
+	}
 }
 </script>
 </body>

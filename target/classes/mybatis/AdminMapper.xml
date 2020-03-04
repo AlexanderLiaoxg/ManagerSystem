@@ -53,4 +53,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	<select id="getAdminUnReadInformation" parameterType="int" resultType="int">
 		select count(*) from broadcast_belong_to_admin where admin_id = #{admin_id}
 	</select>
+	
+	<!-- 根据时间段来查询管理员 -->
+	<select id="getDateFindAdmin" parameterType="String" resultType="po.Admin_User">
+		select * from admin_info where admin_create_time between #{logMin} and #{logMax}
+	</select>
 </mapper>

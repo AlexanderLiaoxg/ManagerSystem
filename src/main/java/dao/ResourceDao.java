@@ -24,6 +24,7 @@ public interface ResourceDao {
 	public void editResource(Resource_Info resource); 
 	public void deleteResource(int re_id);
 	public List getResourceByCategoryId(int categoryId);
+	public List<Resource_Info> getDateFindResources(@Param("logMax")String logMax, @Param("logMin")String logMin);
 	
 	/*资讯部分*/
 	public List getAllInfomation();
@@ -37,4 +38,5 @@ public interface ResourceDao {
 	public List<Information_toUser> getAdminUnreadInformation(int admin_id);
 	//多个参数用param标签传输，非pojo对象
 	public void setReaded(@Param("bu_id")int bu_id, @Param("admin_id")int admin_id);
+	public List<Information_toUser> getDateFindInformation(@Param("logMax")String logMax, @Param("logMin")String logMin);
 }

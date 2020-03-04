@@ -1,5 +1,8 @@
 package po;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 public class Admin_User {
 	private int admin_id;
 	private int admin_role_id;
@@ -9,7 +12,8 @@ public class Admin_User {
 	private String admin_email;
 	private String admin_role;
 	private String admin_state;
-	private String admin_create_time;
+	private Date admin_create_time;
+	SimpleDateFormat format  = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	public int getAdmin_id() {
 		return admin_id;
 	}
@@ -53,9 +57,9 @@ public class Admin_User {
 		this.admin_state = admin_state;
 	}
 	public String getAdmin_create_time() {
-		return admin_create_time;
+		return format.format(admin_create_time);
 	}
-	public void setAdmin_create_time(String admin_create_time) {
+	public void setAdmin_create_time(Date admin_create_time) {
 		this.admin_create_time = admin_create_time;
 	}
 	public int getAdmin_role_id() {

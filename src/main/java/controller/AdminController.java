@@ -1,5 +1,10 @@
 package controller;
 
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
 import javax.security.auth.message.callback.PrivateKeyCallback.Request;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -13,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -20,8 +26,10 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import dao.AdminDao;
 import net.sf.json.JSONObject;
 import po.Admin_User;
+import po.Information_toUser;
 import po.User_Info;
 import service.AdminService;
+import util.KMP;
 
 @Controller
 public class AdminController {
@@ -117,4 +125,48 @@ public class AdminController {
         result.put("success", true);  
 		return result;
 	}
+	
+	@ResponseBody
+	@RequestMapping("/toDeleteAdmins")
+	public JSONObject toDeleteAdmins(@RequestParam(value="checked_ids") int[] checked_ids)
+	{
+		for(int i=0 ; i<checked_ids.length; i++)
+		{
+			adminDao.deleteAdmin(checked_ids[i]);
+		}
+		JSONObject result = new JSONObject();  
+        result.put("success", true);  
+		return result;
+	}
+	
+	@RequestMapping("/toGetDateFindAdmin")
+	public String toGetDateFindAdmin(Model model,String logMin,String logMax,String admin_name) {
+		
+		List<Admin_User> admins = adminDao.getDateFindAdmin(logMax, logMin);
+		/*截取id和title组成新的MAP信息*/
+		Map<Integer,String>datas = new HashMap<Integer, String>();
+		Iterator<Admin_User> iterator = admins.iterator();
+		 while (iterator.hasNext())
+		 {
+			 Admin_User admin = iterator.next();
+			 	datas.put(admin.getAdmin_id(), admin.getAdmin_name());
+		 }
+		KMP kmp = new KMP(admin_name, datas);
+		System.out.println("datas: " + datas.toString());
+		List<Integer> admin_ids = kmp.Judgement();
+		
+		/**根据bu_id返回筛选的结果集**/
+		iterator = admins.iterator();
+		while (iterator.hasNext())
+		 {
+				Admin_User admin = iterator.next();
+			 	if(!admin_ids.contains(admin.getAdmin_id())) {
+			 		iterator.remove();
+			 		System.out.print("移除了：" + admin.getAdmin_name());
+			 	}
+		 }
+		model.addAttribute("admins", admins);
+		return "admin-list";
+	}
+	
 }

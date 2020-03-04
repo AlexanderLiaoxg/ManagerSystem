@@ -56,8 +56,8 @@ public class ToPage {
 	@RequestMapping("/member-list")
 	public String memberList(Model model) {
 		List users = userDao.getAllUser();
-		System.out.println(users);
-		System.out.println("test: " + ((User_Info) users.get(0)).getUname());
+		//System.out.println(users);
+		//System.out.println("test: " + ((User_Info) users.get(0)).getUname());
 		model.addAttribute("users", users);
 		return "member-list";
 	}

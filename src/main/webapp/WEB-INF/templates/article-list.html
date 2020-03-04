@@ -33,11 +33,11 @@
 			<option value="2">分类二</option>
 		</select>
 		</span> 日期范围：
-		<input type="text" onfocus="WdatePicker({ maxDate:'#F{$dp.$D(\'logmax\')||\'%y-%M-%d\'}' })" id="logmin" class="input-text Wdate" style="width:120px;">
+		<input type="text" autocomplete="off" onfocus="WdatePicker({ maxDate:'#F{$dp.$D(\'logmax\')||\'%y-%M-%d\'}' })" id="logmin" class="input-text Wdate" style="width:120px;">
 		-
-		<input type="text" onfocus="WdatePicker({ minDate:'#F{$dp.$D(\'logmin\')}',maxDate:'%y-%M-%d' })" id="logmax" class="input-text Wdate" style="width:120px;">
-		<input type="text" name="" id="" placeholder=" 资讯名称" style="width:250px" class="input-text">
-		<button name="" id="" class="btn btn-success" type="submit"><i class="Hui-iconfont">&#xe665;</i> 搜资讯</button>
+		<input type="text" autocomplete="off" onfocus="WdatePicker({ minDate:'#F{$dp.$D(\'logmin\')}',maxDate:'%y-%M-%d' })" id="logmax" class="input-text Wdate" style="width:120px;">
+		<input type="text" name="bu_title" id="" placeholder=" 资讯名称" style="width:250px" class="input-text">
+		<button onclick="getDateFindInformation(this)" name="" id="" class="btn btn-success" type="button"><i class="Hui-iconfont">&#xe665;</i> 搜资讯</button>
 	</div>
 	<div class="cl pd-5 bg-1 bk-gray mt-20"> <span class="l"><a href="javascript:;" onclick="deletInformations()" class="btn btn-danger radius"><i class="Hui-iconfont">&#xe6e2;</i> 批量删除</a> 
 	<a class="btn btn-primary radius" data-title="添加资讯" onclick="article_add('article-add')" href="javascript:;"><i class="Hui-iconfont">&#xe600;</i> 添加资讯</a></span> <span class="r">共有数据：<strong>54</strong> 条</span> </div>
@@ -273,6 +273,22 @@ function deletInformations(){
 			console.log(data.msg);
 		},
 	});	
+}
+
+/*时间段查询*/
+function getDateFindInformation(obj){
+	var logMin = $(obj).parent().children("#logmin").val()
+	var logMax = $(obj).parent().children("#logmax").val()
+	var title = document.getElementsByName("bu_title")[0].value;
+	var url = "toGetDateFindInformation?logMin=" + logMin  +"&logMax=" + logMax + "&title=" + title;
+	if(logMin==""||logMax==""){
+		layer.msg('时间不能为空!',{icon: 5,time:1000});	
+	}
+	else if(title==""){
+		layer.msg('资讯名称不能为空!',{icon: 5,time:1000});
+	}else{
+		window.location.href=url;
+	}
 }
 </script>
 </body>

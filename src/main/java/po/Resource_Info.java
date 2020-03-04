@@ -1,5 +1,6 @@
 package po;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class Resource_Info {
@@ -16,6 +17,7 @@ public class Resource_Info {
 	private String re_description;
 	private int re_value;
 	private int re_download_times;
+	SimpleDateFormat format  = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	public int getRe_id() {
 		return re_id;
 	}
@@ -64,8 +66,8 @@ public class Resource_Info {
 	public void setUper_name(String uper_name) {
 		this.uper_name = uper_name;
 	}
-	public Date getUp_time() {
-		return up_time;
+	public String getUp_time() {
+		return format.format(up_time);
 	}
 	public void setUp_time(Date up_time) {
 		this.up_time = up_time;

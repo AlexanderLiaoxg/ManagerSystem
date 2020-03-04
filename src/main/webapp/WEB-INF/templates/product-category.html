@@ -164,9 +164,9 @@ function getAllChildrenNodes(treeNode,result){
                 result = getAllChildrenNodes(childrenNodes[i], result);
             }
         }
+        return result;
     }
-    return result;
-}
+
 //控制根节点显示
 function showRemoveAndRenameBtn(treeId, treeNode) {
 	if(treeNode.isLastNode&&treeNode.parentTId==null )

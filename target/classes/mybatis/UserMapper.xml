@@ -42,4 +42,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	<select id="gettUserById" resultType="po.User_Info">
 		select * from user_info where uid = #{uname}
 	</select>
+	
+	<!-- 根据时间段来查询用户 -->
+	<select id="getDateFindUser" parameterType="String" resultType="po.User_Info">
+		select * from user_info where ucreate_time between #{logMin} and #{logMax}
+	</select>
 </mapper>

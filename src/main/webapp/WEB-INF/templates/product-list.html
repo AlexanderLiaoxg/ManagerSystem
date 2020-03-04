@@ -30,18 +30,18 @@
 	<nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span> 产品管理 <span class="c-gray en">&gt;</span> 产品列表 <a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新" ><i class="Hui-iconfont">&#xe68f;</i></a></nav>
 	<div class="page-container">
 		<div class="text-c"> 日期范围：
-			<input type="text" onfocus="WdatePicker({ maxDate:'#F{$dp.$D(\'logmax\')||\'%y-%M-%d\'}' })" id="logmin" class="input-text Wdate" style="width:120px;">
+			<input type="text" autocomplete="off"  onfocus="WdatePicker({ maxDate:'#F{$dp.$D(\'logmax\')||\'%y-%M-%d\'}' })" id="logmin" class="input-text Wdate" style="width:120px;">
 			-
-			<input type="text" onfocus="WdatePicker({ minDate:'#F{$dp.$D(\'logmin\')}',maxDate:'%y-%M-%d' })" id="logmax" class="input-text Wdate" style="width:120px;">
-			<input type="text" name="" id="" placeholder=" 产品名称" style="width:250px" class="input-text">
-			<button name="" id="" class="btn btn-success" type="submit"><i class="Hui-iconfont">&#xe665;</i> 搜产品</button>
+			<input type="text" autocomplete="off"  onfocus="WdatePicker({ minDate:'#F{$dp.$D(\'logmin\')}',maxDate:'%y-%M-%d' })" id="logmax" class="input-text Wdate" style="width:120px;">
+			<input type="text" name="resource_name" id="" placeholder=" 资源名称" style="width:250px" class="input-text">
+			<button onclick="toGetDateFindResource(this)" name="" id="" class="btn btn-success" type="button"><i class="Hui-iconfont">&#xe665;</i> 搜资源</button>
 		</div>
-		<div class="cl pd-5 bg-1 bk-gray mt-20"> <span class="l"><a href="javascript:;" onclick="datadel()" class="btn btn-danger radius"><i class="Hui-iconfont">&#xe6e2;</i> 批量删除</a> <a class="btn btn-primary radius" onclick="product_add('添加产品','product-add')" href="javascript:;"><i class="Hui-iconfont">&#xe600;</i> 添加产品</a></span> <span class="r">共有数据：<strong>54</strong> 条</span> </div>
+		<div class="cl pd-5 bg-1 bk-gray mt-20"> <span class="l"><a href="javascript:;" onclick="deletResources()" class="btn btn-danger radius"><i class="Hui-iconfont">&#xe6e2;</i> 批量删除</a> <a class="btn btn-primary radius" onclick="product_add('添加产品','product-add')" href="javascript:;"><i class="Hui-iconfont">&#xe600;</i> 添加产品</a></span> <span class="r">共有数据：<strong>54</strong> 条</span> </div>
 		<div class="mt-20">
 			<table class="table table-border table-bordered table-bg table-hover table-sort">
 				<thead>
 					<tr class="text-c">
-						<th width="40"><input name="" type="checkbox" value=""></th>
+						<th width="40"><input id="select_all" name="" type="checkbox" value=""></th>
 						<th width="40">ID</th>
 						<th width="80">缩略图</th>
 						<th width="100">资源名称</th>
@@ -56,8 +56,8 @@
 				<tbody>
 
 				<tr th:each="resource:${resources}" class="text-c">
-						<td><input name="" type="checkbox" value=""></td>
-						<td th:text="${resource.getRe_id()}">id</td>
+						<td><input name="select_item" type="checkbox" value=""></td>
+						<td class="id" th:text="${resource.getRe_id()}">id</td>
 						<td><a onClick="product_show(${resources.getRe_name()},'product-show.html','10001')" href="javascript:;"><img width="60" class="product-thumb"  th:src=${resource.getRe_img_path()}/></a></td>
 						<td  th:text="${resource.getRe_name()}" class="text-l"><a style="text-decoration:none" onClick="product_show(${resources.getRe_name()},'product-show.html','10001')" href="javascript:;"> defalult</a></td>
 						<td  th:text="${resource.getRe_description()}" class="text-l">description</td>
@@ -254,6 +254,78 @@ function product_del(obj,id){
 			},
 		});		
 	});
+}
+
+/*By_lxg : 选中所有元素，当前页面*/
+var checkboxes = document.getElementsByName('select_item');
+              $("#select_all").click(function() {
+              	  var bu_ids = new Array(checkboxes.length);
+                  for (var i = 0; i < checkboxes.length; i++) {
+                      var checkbox = checkboxes[i];
+                      bu_ids[i]=$(checkbox).parents("tr").children(".id").text();
+                      //如果select_all没有选中，子都不选中，如果选中就都选中
+                      if (!$(this).get(0).checked) {
+                          checkbox.checked = false;
+                      } else {
+                          checkbox.checked = true;
+                      }
+                  }
+              });
+
+function deletResources(){
+	var checkboxes = document.getElementsByName('select_item');
+	var checkedLines = new Array();
+	var checked_ids = new Array();
+	var j=0;
+	for (var i = 0; i < checkboxes.length; i++) {
+		//如果被勾选了
+		if(checkboxes[i].checked)
+			{
+				checked_ids[j] = $(checkboxes[i]).parents("tr").children(".id").text()
+				checkedLines[j] = $(checkboxes[i]).parents("tr")
+				j=j+1
+			}
+	}
+	//提交勾选的数据
+	$.ajax({
+		type: 'POST',
+		url: 'toDeletResources',
+		data:{
+		        "checked_ids":checked_ids
+		 },
+		dataType: 'json',
+		//传递数组时必须使用true，因为不使用则是lists[]=xx&lists[]=xx，使用则是element = xx& element=xx
+		traditional:true,
+	    cache:false,
+	    async:false,
+		success: function(data){
+			for (var i = 0; i < checkedLines.length; i++) {
+				checkedLines[i].remove();
+			}
+		layer.msg('已删除!',{icon: 6,time:1000});
+		//刷新一下，免得分页出现不一样
+		location.reload()
+		},
+		error:function(data) {
+			console.log(data.msg);
+		},
+	});	
+}
+
+/*时间段查询*/
+function toGetDateFindResource(obj){
+	var logMin = $(obj).parent().children("#logmin").val()
+	var logMax = $(obj).parent().children("#logmax").val()
+	var resource_name = document.getElementsByName("resource_name")[0].value;
+	var url = "toGetDateFindResource?logMin=" + logMin  +"&logMax=" + logMax + "&resource_name=" + resource_name;
+	if(logMin==""||logMax==""){
+		layer.msg('时间不能为空!',{icon: 5,time:1000});	
+	}
+	else if(resource_name==""){
+		layer.msg('资源名称不能为空!',{icon: 5,time:1000});
+	}else{
+		window.location.href=url;
+	}
 }
 </script>
 </body>

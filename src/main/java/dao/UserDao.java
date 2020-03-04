@@ -20,5 +20,6 @@ public interface UserDao {
 	public void editUser(User_Info user);
 	public void deleteUser(int uid);
 	public void changeUserPassword(int uid, String newpassword);
+	public List<User_Info> getDateFindUser(@Param("logMax")String logMax, @Param("logMin")String logMin);
 
 }

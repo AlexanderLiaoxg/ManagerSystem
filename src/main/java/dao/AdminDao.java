@@ -22,5 +22,6 @@ public interface AdminDao {
 	public void changeAdminPassword(int admin_id, String newpassword);
 	public void changeAdminState(Admin_User admin);
 	public int getAdminUnReadInformation(int admin_id);
+	public List<Admin_User> getDateFindAdmin(@Param("logMax")String logMax, @Param("logMin")String logMin);
 
 }
